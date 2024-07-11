@@ -13,8 +13,12 @@ public class DatabaseConnection {
 //    private static final String USER = "postgres";
 //    private static final String PASSWORD = "1";
 
+    private static String username;
+    private static String password;
+
     static {
         try {
+            initializeCredentials();
             createDatabaseIfNotExists();
         } catch (Exception e) {
             e.printStackTrace();
@@ -22,11 +26,14 @@ public class DatabaseConnection {
         }
     }
 
+    private static void initializeCredentials() {
+        username = UserInput.getUsername();
+        password = UserInput.getPassword();
+    }
+
     private static void createDatabaseIfNotExists() throws SQLException {
         Connection connection = null;
         try {
-            String username = UserInput.getUsername();
-            String password = UserInput.getPassword();
             connection = DriverManager.getConnection(URL, username, password);
             DatabaseMetaData metaData = connection.getMetaData();
             if (!databaseExists(metaData, DATABASE_NAME)) {
@@ -56,8 +63,9 @@ public class DatabaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        String username = UserInput.getUsername();
-        String password = UserInput.getPassword();
+        if (username == null || password == null) {
+            initializeCredentials();
+        }
         try {
             return DriverManager.getConnection(URL + DATABASE_NAME, username, password);
         } catch (SQLException e) {
