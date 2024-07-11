@@ -1,6 +1,6 @@
 package util;
 
-import static java.lang.System.out;
+//import static java.lang.System.out;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
