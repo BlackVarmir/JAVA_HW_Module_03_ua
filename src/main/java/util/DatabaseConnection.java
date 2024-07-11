@@ -10,8 +10,8 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     private static final String URL = "jdbc:postgresql://localhost:5432/";
     private static final String DATABASE_NAME = "taxdb";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "1";
+//    private static final String USER = "postgres";
+//    private static final String PASSWORD = "1";
 
     static {
         try {
@@ -25,11 +25,13 @@ public class DatabaseConnection {
     private static void createDatabaseIfNotExists() throws SQLException {
         Connection connection = null;
         try {
-           connection = DriverManager.getConnection(URL, USER, PASSWORD);
-           DatabaseMetaData metaData = connection.getMetaData();
-           if (!databaseExists(metaData, DATABASE_NAME)) {
-               createDatabase(connection);
-           }
+            String username = UserInput.getUsername();
+            String password = UserInput.getPassword();
+            connection = DriverManager.getConnection(URL, username, password);
+            DatabaseMetaData metaData = connection.getMetaData();
+            if (!databaseExists(metaData, DATABASE_NAME)) {
+                createDatabase(connection);
+            }
         } finally {
             if (connection != null) {
                 connection.close();
@@ -54,6 +56,13 @@ public class DatabaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL + DATABASE_NAME, USER, PASSWORD);
+        String username = UserInput.getUsername();
+        String password = UserInput.getPassword();
+        try {
+            return DriverManager.getConnection(URL + DATABASE_NAME, username, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to connect to the database", e);
+        }
     }
 }
